@@ -18,10 +18,19 @@ class Exec extends Subsystem
         $this->resource = $this->getSessionResource();
     }
 
+    /**
+     * @param $cmd
+     * @param null $pty
+     * @param array $env THIS IS DISABLED -- due to bug in the SSH2 ext under PHP7 https://bugs.php.net/bug.php?id=72150
+     * @param int $width
+     * @param int $height
+     * @param int $width_height_type
+     * @return mixed
+     */
     public function run($cmd, $pty = null, array $env = array(), $width = 80, $height = 25, $width_height_type = SSH2_TERM_UNIT_CHARS)
     {
         $cmd .= ';echo -ne "[return_code:$?]"';
-        $stdout = ssh2_exec($this->getResource(), $cmd, $pty, $env, $width, $height, $width_height_type);
+        $stdout = ssh2_exec($this->getResource(), $cmd, $pty, null, $width, $height, $width_height_type);
         $stderr = ssh2_fetch_stream($stdout, SSH2_STREAM_STDERR);
         stream_set_blocking($stderr, true);
         stream_set_blocking($stdout, true);
